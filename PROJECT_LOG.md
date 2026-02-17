@@ -12,15 +12,14 @@
 ---
 
 ## 3. Core Features
-- Splash Screen
 - RecyclerView
 - API Integration
 
 ---
 
 ## 4. Issues & Fixes
-- **Issue:**   
-  **Fix:** 
+- **Issue:** UI not updating due to API error (on free tier OpenWeather API) 
+  **Fix:** rectifying model classes as per API response fields
   
 ---
 

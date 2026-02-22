@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         replaceFragment(HomeFragment())
+        binding.bottomNavBar.selectedItemId = R.id.item2
 
         binding.bottomNavBar.setOnItemSelectedListener {
             when(it.itemId){

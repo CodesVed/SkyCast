@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -19,9 +20,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "OPEN_WEATHER_API_KEY",
-            "\"${project.properties["OPEN_WEATHER_API_KEY"]}\""
-        )
+//        buildConfigField("String", "OPEN_WEATHER_API_KEY",
+//            "\"${project.properties["OPEN_WEATHER_API_KEY"]}\""
+//        )
     }
 
     buildTypes {

@@ -5,9 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.ApiClient
 import com.example.weatherapp.BuildConfig
+import com.example.weatherapp.MainActivity
 import com.example.weatherapp.databinding.FragmentHomeBinding
 import com.example.weatherapp.models.Coord
 import com.example.weatherapp.models.WeatherResponse
@@ -15,11 +18,15 @@ import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlin.collections.isNullOrEmpty
 
 class HomeFragment: Fragment() {
     private val apiKey = BuildConfig.OPEN_WEATHER_API_KEY
     private lateinit var binding: FragmentHomeBinding
+    private lateinit var forecastRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,13 +40,11 @@ class HomeFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d("API_KEY", apiKey)
-        fetchCoordinates("Delhi")
-
+        fetchCoordinates("Indore")
     }
 
     private fun fetchCoordinates(city: String){
-        ApiClient.api.getCityCoord(city, 1, apiKey)
+        ApiClient.api.getCityCoord(city = city, apiKey = apiKey)
             .enqueue(object: Callback<List<Coord>>{
                 override fun onResponse(
                     call: Call<List<Coord>>,
@@ -50,6 +55,7 @@ class HomeFragment: Fragment() {
                         fetchWeather(geo.lat, geo.lon)
                     } else {
                         Log.e("Home", "APIFailure: ${response.code()}")
+                        Toast.makeText(requireContext(), "City not found", Toast.LENGTH_LONG).show()
                     }
                 }
 
@@ -57,6 +63,11 @@ class HomeFragment: Fragment() {
                     call: Call<List<Coord>>,
                     t: Throwable
                 ) {
+                    val errorMessage = when(t){
+                        is java.net.UnknownHostException -> "No internet connection"
+                        is java.net.SocketTimeoutException -> "Connection timeout"
+                        else -> "Something went wrong"
+                    }
                     Log.d("Home", "GeoFailure: ${t.message}")
                 }
 
@@ -64,7 +75,7 @@ class HomeFragment: Fragment() {
     }
 
     private fun fetchWeather(lat: Double, lon: Double){
-        ApiClient.api.getWeather(lat, lon, "metric", apiKey)
+        ApiClient.api.getWeather(lat = lat, lon = lon, apiKey = apiKey, units = "metric")
             .enqueue(object : Callback<WeatherResponse>{
                 override fun onResponse(
                     call: Call<WeatherResponse>,
@@ -78,16 +89,19 @@ class HomeFragment: Fragment() {
                             "https://openweathermap.org/img/wn/${it}@2x.png"
                         }
 
-                        binding.location.text = weather.name ?: "Unknown"
+                        binding.location.text = weather.name
                         if (iconUrl != null){
                             Picasso.get().load(iconUrl).into(binding.weatherIcon)
                         }
-                        binding.temperature.text = "${weather.main.temp.toInt()}°"
+                        binding.updateTime.text = "Updated: ${LocalDateTime.now().format(
+                            DateTimeFormatter.ofPattern("hh:mm a"))}"
+                        binding.temperature.text = "${weather.main.temp.toInt()}°C"
                         binding.condition.text = weather.weather.firstOrNull()?.description ?: "--"
-                        binding.feel.text = "Feels Like: ${weather.main.feelsLike.toInt()}°"
+                        binding.feel.text = "Feels Like: ${weather.main.feelsLike.toInt()}°C"
                         binding.humidity.text = "${weather.main.humidity}%"
                         binding.wind.text = "${weather.wind?.speed ?: 0.0} m/s"
-                        binding.visibility.text = weather.visibility?.let {"${it/1000} km"} ?: "N/A"
+                        binding.visibility.text = weather.visibility.let {"${it/1000.0} km"}
+
                     } else {
                         Log.e("Home", "APIFailure: ${response.code()}")
                     }

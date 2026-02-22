@@ -1,4 +1,5 @@
 # PROJECT LOG - Weather App
+# Duration - 16 Feb to 
 
 ## 1. Project Snapshot
 - Platform: Android
@@ -18,9 +19,11 @@
 ---
 
 ## 4. Issues & Fixes
-- **Issue:** UI not updating due to API error (on free tier OpenWeather API) 
+- **Issue:** UI not updating due to API error (on free tier OpenWeather API).
   **Fix:** rectifying model classes as per API response fields
-  
+
+- **Issue:** 401: unauthorized error from API, due to which UI not updating.
+  **Fix:** used Secret Gradle Plugin to correctly get the API Key
 ---
 
 ## 5. Key Learnings

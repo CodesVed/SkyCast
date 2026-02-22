@@ -11,15 +11,15 @@ interface APIInterface {
     @GET("geo/1.0/direct")
     fun getCityCoord(
         @Query("q") city: String,
-        @Query("limit") limit: Int=1,
-        @Query("appid") apiKey: String
+        @Query("appid") apiKey: String,
+        @Query("limit") limit: Int=1
     ): Call<List<Coord>>
 
     @GET("data/2.5/weather")
     fun getWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("units") units: String ="metric",
-        @Query("appid") apiKey: String
+        @Query("appid") apiKey: String,
+        @Query("units") units: String ="metric"
     ): Call<WeatherResponse>
 }

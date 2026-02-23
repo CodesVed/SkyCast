@@ -7,10 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
-import com.example.weatherapp.ApiClient
+import com.example.weatherapp.api.ApiClient
 import com.example.weatherapp.BuildConfig
-import com.example.weatherapp.MainActivity
 import com.example.weatherapp.databinding.FragmentHomeBinding
 import com.example.weatherapp.models.Coord
 import com.example.weatherapp.models.WeatherResponse
@@ -18,15 +16,15 @@ import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.collections.isNullOrEmpty
 
 class HomeFragment: Fragment() {
     private val apiKey = BuildConfig.OPEN_WEATHER_API_KEY
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var forecastRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,10 +38,19 @@ class HomeFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fetchCoordinates("Indore")
+        parentFragmentManager.setFragmentResultListener("cityKey", viewLifecycleOwner) {_, bundle ->
+            val lat = bundle.getDouble("lat")
+            val lon = bundle.getDouble("lon")
+            val cityName = bundle.getString("cityName")
+
+            Log.d("Home", "HomeFragment: Result Received! City: $cityName")
+
+            binding.location.text = cityName
+            fetchWeather(lat, lon)
+        }
     }
 
-    private fun fetchCoordinates(city: String){
+    private fun fetchCoordinates(city: String?){
         ApiClient.api.getCityCoord(city = city, apiKey = apiKey)
             .enqueue(object: Callback<List<Coord>>{
                 override fun onResponse(
@@ -64,8 +71,8 @@ class HomeFragment: Fragment() {
                     t: Throwable
                 ) {
                     val errorMessage = when(t){
-                        is java.net.UnknownHostException -> "No internet connection"
-                        is java.net.SocketTimeoutException -> "Connection timeout"
+                        is UnknownHostException -> "No internet connection"
+                        is SocketTimeoutException -> "Connection timeout"
                         else -> "Something went wrong"
                     }
                     Log.d("Home", "GeoFailure: ${t.message}")

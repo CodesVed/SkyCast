@@ -1,4 +1,4 @@
-package com.example.weatherapp
+package com.example.weatherapp.api
 
 import com.example.weatherapp.models.Coord
 import com.example.weatherapp.models.WeatherResponse
@@ -10,9 +10,9 @@ interface APIInterface {
 
     @GET("geo/1.0/direct")
     fun getCityCoord(
-        @Query("q") city: String,
+        @Query("q") city: String?,
         @Query("appid") apiKey: String,
-        @Query("limit") limit: Int=1
+        @Query("limit") limit: Int =5
     ): Call<List<Coord>>
 
     @GET("data/2.5/weather")

@@ -1,5 +1,6 @@
 package com.example.weatherapp.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,6 +22,7 @@ import java.net.UnknownHostException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.collections.isNullOrEmpty
+import androidx.core.content.edit
 
 class HomeFragment: Fragment() {
     private val apiKey = BuildConfig.OPEN_WEATHER_API_KEY
@@ -38,6 +40,19 @@ class HomeFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val sharedPref = requireContext().getSharedPreferences("WeatherPrefs", Context.MODE_PRIVATE)
+        val savedCity = sharedPref.getString("lastCity", null)
+
+        if (savedCity != null){
+            val lat = sharedPref.getFloat("lastLat", 0f).toDouble()
+            val lon = sharedPref.getFloat("lastLon", 0f).toDouble()
+
+            binding.location.text = savedCity
+            fetchWeather(lat, lon)
+        } else {
+            fetchCoordinates("Indore")
+        }
+
         parentFragmentManager.setFragmentResultListener("cityKey", viewLifecycleOwner) {_, bundle ->
             val lat = bundle.getDouble("lat")
             val lon = bundle.getDouble("lon")
@@ -47,10 +62,11 @@ class HomeFragment: Fragment() {
 
             binding.location.text = cityName
             fetchWeather(lat, lon)
+            saveLastCity(cityName, lat, lon)
         }
     }
 
-    private fun fetchCoordinates(city: String?){
+    private fun fetchCoordinates(city: String){
         ApiClient.api.getCityCoord(city = city, apiKey = apiKey)
             .enqueue(object: Callback<List<Coord>>{
                 override fun onResponse(
@@ -96,7 +112,6 @@ class HomeFragment: Fragment() {
                             "https://openweathermap.org/img/wn/${it}@2x.png"
                         }
 
-                        binding.location.text = weather.name
                         if (iconUrl != null){
                             Picasso.get().load(iconUrl).into(binding.weatherIcon)
                         }
@@ -122,5 +137,14 @@ class HomeFragment: Fragment() {
                 }
 
             })
+    }
+
+    private fun saveLastCity(name: String?, lat: Double, lon: Double){
+        val sharedPref = requireContext().getSharedPreferences("WeatherPrefs", Context.MODE_PRIVATE)
+        sharedPref.edit {
+            putString("lastCity", name)
+            putFloat("lastLat", lat.toFloat())
+            putFloat("lastLon", lon.toFloat())
+        }
     }
 }

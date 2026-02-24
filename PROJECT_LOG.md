@@ -25,8 +25,8 @@
 - **Issue:** 401: unauthorized error from API, due to which UI not updating.
   **Fix:** used Secret Gradle Plugin to correctly get the API Key
 
-- **Issue:** clicking on city item in search not working
-  **Fix:** 
+- **Issue:** switching tabs clears last selected city weather
+  **Fix:** using shared preferences to save last selected or default city
 ---
 
 ## 5. Key Learnings

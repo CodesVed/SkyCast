@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: androidx.fragment.app.Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.frameLayout,fragment).commit()
+        fragmentTransaction.replace(R.id.frameLayout,fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

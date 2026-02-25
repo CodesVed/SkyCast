@@ -51,6 +51,7 @@ class HomeFragment: Fragment() {
             fetchWeather(lat, lon)
         } else {
             fetchCoordinates("Indore")
+            binding.location.text = "Indore"
         }
 
         parentFragmentManager.setFragmentResultListener("cityKey", viewLifecycleOwner) {_, bundle ->

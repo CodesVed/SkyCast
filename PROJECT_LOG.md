@@ -5,7 +5,7 @@
 - Platform: Android
 - Language: Kotlin
 - Stack: REST API
-- Key Libraries: Retrofit, Gson, OpenWeather
+- Key Libraries: Retrofit, Gson, Picasso, OpenWeather
 
 ## 2. Goal
 > Developed a weather app to practice API integration, JSON parsing, and dynamic UI updates in Android.
@@ -31,3 +31,17 @@
 
 ## 5. Key Learnings
 - use of OpenWeather API
+
+## 6. Future Updates
+- 7-day forecast
+- Air Quality (good, moderate, poor, etc.) or AQI display (OpenWeather's Air Pollution API)
+
+## Version History
+
+### v1.0 - Initial Release 
+- **Release Date** 25-02-2026
+- **APK** Skycast_v1.0.apk
+- **Changes:**
+  - Initial release
+  - Basic app setup
+  - Core features implemented

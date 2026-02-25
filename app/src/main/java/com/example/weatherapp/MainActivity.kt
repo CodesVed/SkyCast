@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameLayout,fragment)
-            .addToBackStack(null)
+//            .addToBackStack(null)
             .commit()
     }
 }

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
+import com.example.weatherapp.R
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.api.ApiClient
@@ -14,6 +15,7 @@ import com.example.weatherapp.BuildConfig
 import com.example.weatherapp.adapters.MyAdapter
 import com.example.weatherapp.databinding.FragmentSearchBinding
 import com.example.weatherapp.models.Coord
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -56,12 +58,15 @@ class SearchFragment: Fragment() {
                         putDouble("lon", selectedCity.lon)
                         putString("cityName", selectedCity.name)
                     }
-
                     parentFragmentManager.setFragmentResult("cityKey", result)
-                    parentFragmentManager.popBackStack()
+
+                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavBar)
+                    bottomNav.selectedItemId = R.id.item2
                 }
             }
         })
+
+        fetchCitySuggestions("Indore")
 
         binding.citySearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String): Boolean {
@@ -73,7 +78,7 @@ class SearchFragment: Fragment() {
 
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isEmpty()){
-                    adapter.updateData(emptyList())
+                    fetchCitySuggestions("India")
                 } else if (newText.length > 2) {
                     fetchCitySuggestions(newText)
                 }
@@ -84,7 +89,7 @@ class SearchFragment: Fragment() {
     }
 
     private fun fetchCitySuggestions(city: String){
-        ApiClient.api.getCityCoord(city = city, apiKey = apiKey)
+        ApiClient.api.getCityCoord(city = city, apiKey = apiKey, limit = 10)
             .enqueue(object: Callback<List<Coord>>{
                 override fun onResponse(
                     call: Call<List<Coord>>,
@@ -95,6 +100,7 @@ class SearchFragment: Fragment() {
                         adapter.updateData(geo)
                     } else {
                         Log.e("Search", "APIFailure: ${response.code()}")
+                        adapter.updateData(emptyList())
                         Toast.makeText(requireContext(), "City not found", Toast.LENGTH_LONG).show()
                     }
                     Log.d("Search", "Cities found: ${response.body()?.size}")

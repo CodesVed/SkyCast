@@ -12,7 +12,7 @@ interface APIInterface {
     fun getCityCoord(
         @Query("q") city: String?,
         @Query("appid") apiKey: String,
-        @Query("limit") limit: Int =5
+        @Query("limit") limit: Int = 10
     ): Call<List<Coord>>
 
     @GET("data/2.5/weather")
